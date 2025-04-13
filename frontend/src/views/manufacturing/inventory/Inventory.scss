@@ -1,0 +1,192 @@
+@mixin sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.inventory-page {
+  .search-container {
+    width: 20%;
+  }
+
+  .table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .fixed-header {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    @include sticky-header;
+
+    .fixed-header-cell {
+      display: table-cell;
+      padding: 0.75rem;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 1px solid #dee2e6;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      // Column width distribution based on content needs
+      &:nth-child(1) {
+        // ID
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama Part
+        width: 20%;
+      }
+      &:nth-child(3) {
+        // Tipe Part
+        width: 12%;
+      }
+      &:nth-child(4) {
+        // Maker
+        width: 10%;
+      }
+      &:nth-child(5) {
+        // Kuantitas
+        width: 8%;
+      }
+      &:nth-child(6) {
+        // Lokasi
+        width: 12%;
+      }
+      &:nth-child(7) {
+        // Factory
+        width: 12%;
+      }
+      &:nth-child(8) {
+        // Informasi
+        width: 25%;
+      }
+      &:nth-child(9) {
+        // Aksi
+        width: 10%;
+      }
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .table-container {
+    position: relative;
+    max-height: 54vh;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .responsive-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    td {
+      padding: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      // Match column widths with header
+      &:nth-child(1) {
+        // ID
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama Part
+        width: 20%;
+      }
+      &:nth-child(3) {
+        // Tipe Part
+        width: 12%;
+      }
+      &:nth-child(4) {
+        // Maker
+        width: 10%;
+      }
+      &:nth-child(5) {
+        // Kuantitas
+        width: 8%;
+      }
+      &:nth-child(6) {
+        // Lokasi
+        width: 12%;
+      }
+      &:nth-child(7) {
+        // Factory
+        width: 12%;
+      }
+      &:nth-child(8) {
+        // Informasi
+        width: 25%;
+      }
+      &:nth-child(9) {
+        // Aksi
+        width: 10%;
+      }
+    }
+  }
+
+  // Quantity status indicator styles
+  .qty-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    text-align: center;
+
+    &.status-in-stock {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    &.status-low-stock {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    &.status-out-of-stock {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    &.status-on-order {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .inventory-page {
+    .search-container {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px;
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+  }
+}

@@ -1,0 +1,745 @@
+@mixin sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.job-list-page {
+  .search-container {
+    width: 20%;
+  }
+  .table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto; // Add horizontal scroll for smaller screens
+  }
+  .fixed-header {
+    display: table;
+    width: 100%;
+    table-layout: fixed; // This ensures columns maintain their relative widths
+    @include sticky-header;
+    .fixed-header-cell {
+      display: table-cell;
+      padding: 0.75rem;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 1px solid #dee2e6;
+      overflow: hidden;
+      text-overflow: ellipsis; // Add ellipsis for text overflow
+      // Fixed width percentages for proper distribution
+      &:nth-child(1) {
+        // NRP
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama
+        width: 12%;
+      }
+      &:nth-child(3) {
+        // Job Class
+        width: 10%;
+      }
+      &:nth-child(4) {
+        // Deskripsi Pekerjaan
+        width: 25%;
+      }
+      &:nth-child(5) {
+        // Pabrik
+        width: 10%;
+      }
+      &:nth-child(6) {
+        // Tanggal Jatuh Tempo
+        width: 10%;
+      }
+      &:nth-child(7) {
+        // Status
+        width: 10%;
+      }
+      &:nth-child(8) {
+        // Dibuat Pada
+        width: 10%;
+      }
+      &:nth-child(9) {
+        // Aksi
+        width: 6%;
+      }
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+  .table-container {
+    position: relative;
+    max-height: 61vh;
+    overflow-y: auto;
+    // Add this to ensure horizontal scrolling matches header
+    width: 100%;
+  }
+  .responsive-table {
+    width: 100%;
+    table-layout: fixed; // Match the header's table layout
+    border-collapse: collapse;
+    td {
+      padding: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      // Matching column widths with header
+      &:nth-child(1) {
+        // NRP
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama
+        width: 12%;
+      }
+      &:nth-child(3) {
+        // Job Class
+        width: 10%;
+      }
+      &:nth-child(4) {
+        // Deskripsi Pekerjaan
+        width: 25%;
+      }
+      &:nth-child(5) {
+        // Pabrik
+        width: 10%;
+      }
+      &:nth-child(6) {
+        // Tanggal Jatuh Tempo
+        width: 10%;
+      }
+      &:nth-child(7) {
+        // Status
+        width: 10%;
+      }
+      &:nth-child(8) {
+        // Dibuat Pada
+        width: 10%;
+      }
+      &:nth-child(9) {
+        // Aksi
+        width: 6%;
+      }
+    }
+  }
+  // Updated status badge styles - removed font-weight: bold
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    text-align: center;
+    &.status-pending {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    &.status-in-progress {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+    &.status-completed {
+      background-color: #28a745;
+      color: #fff;
+    }
+    &.status-order {
+      background-color: #6f42c1;
+      color: #fff;
+    }
+    &.status-pr {
+      background-color: #fd7e14;
+      color: #fff;
+    }
+  }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+}
+
+// history
+.job-history-list-page {
+  .search-container {
+    width: 20%;
+  }
+
+  .table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto; // Add horizontal scroll for smaller screens
+  }
+
+  .fixed-header {
+    display: table;
+    width: 100%;
+    table-layout: fixed; // This ensures columns maintain their relative widths
+    @include sticky-header;
+
+    .fixed-header-cell {
+      display: table-cell;
+      padding: 0.75rem;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 1px solid #dee2e6;
+      overflow: hidden;
+      text-overflow: ellipsis; // Add ellipsis for text overflow
+
+      // Fixed width percentages for proper distribution
+      &:nth-child(1) {
+        // NRP
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama
+        width: 12%;
+      }
+      &:nth-child(3) {
+        // Job Class
+        width: 8%;
+      }
+      &:nth-child(4) {
+        // Deskripsi Pekerjaan
+        width: 20%;
+      }
+      &:nth-child(5) {
+        // Pabrik
+        width: 8%;
+      }
+      &:nth-child(6) {
+        // Tanggal Jatuh Tempo
+        width: 10%;
+      }
+      &:nth-child(7) {
+        // Status
+        width: 8%;
+      }
+      &:nth-child(8) {
+        // Tanggal Selesai
+        width: 10%;
+      }
+      &:nth-child(9) {
+        // Tanggal Dibuat
+        width: 10%;
+      }
+      &:nth-child(10) {
+        // Aksi
+        width: 6%;
+      }
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .table-container {
+    position: relative;
+    max-height: 500px;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .responsive-table {
+    width: 100%;
+    table-layout: fixed; // Match the header's table layout
+    border-collapse: collapse;
+
+    td {
+      padding: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      // Matching column widths with header
+      &:nth-child(1) {
+        // NRP
+        width: 8%;
+      }
+      &:nth-child(2) {
+        // Nama
+        width: 12%;
+      }
+      &:nth-child(3) {
+        // Job Class
+        width: 8%;
+      }
+      &:nth-child(4) {
+        // Deskripsi Pekerjaan
+        width: 20%;
+      }
+      &:nth-child(5) {
+        // Pabrik
+        width: 8%;
+      }
+      &:nth-child(6) {
+        // Tanggal Jatuh Tempo
+        width: 10%;
+      }
+      &:nth-child(7) {
+        // Status
+        width: 8%;
+      }
+      &:nth-child(8) {
+        // Tanggal Selesai
+        width: 10%;
+      }
+      &:nth-child(9) {
+        // Tanggal Dibuat
+        width: 10%;
+      }
+      &:nth-child(10) {
+        // Aksi
+        width: 6%;
+      }
+    }
+  }
+
+  // Status badge styles
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    text-align: center;
+
+    &.status-pending {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    &.status-in-progress {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+
+    &.status-completed {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    // Add any other status styles that might be in your data
+    &.status-cancelled {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    &.status-on-hold {
+      background-color: #6c757d;
+      color: #fff;
+    }
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+}
+// Enhanced responsive adjustments
+@media (max-width: 768px) {
+  .job-list-page {
+    .search-input {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px; // Compensate for padding if needed
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@mixin sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.inventory-page {
+  .search-container {
+    width: 20%;
+  }
+
+  .table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto; // Add horizontal scroll for smaller screens
+    flex-grow: 1; // Allow the table wrapper to grow and fill available space
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fixed-header {
+    display: table;
+    width: 100%;
+    table-layout: fixed; // This ensures columns maintain their relative widths
+    @include sticky-header;
+
+    .fixed-header-cell {
+      display: table-cell;
+      padding: 0.75rem;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 1px solid #dee2e6;
+      overflow: hidden;
+      text-overflow: ellipsis; // Add ellipsis for text overflow
+
+      // Fixed width percentages for proper distribution
+      &:nth-child(1) {
+        width: 10%;
+      } // ID
+      &:nth-child(2) {
+        width: 20%;
+      } // Nama Part
+      &:nth-child(3) {
+        width: 15%;
+      } // Tipe Part
+      &:nth-child(4) {
+        width: 15%;
+      } // Maker
+      &:nth-child(5) {
+        width: 10%;
+      } // Kuantitas
+      &:nth-child(6) {
+        width: 20%;
+      } // Informasi
+      &:nth-child(7) {
+        width: 10%;
+      } // Aksi
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .table-container {
+    position: relative;
+    flex-grow: 1; // Allow table container to grow and fill available space
+    min-height: 0; // Required for Firefox
+    overflow-y: auto;
+    // Add this to ensure horizontal scrolling matches header
+    width: 100%;
+  }
+
+  .responsive-table {
+    width: 100%;
+    table-layout: fixed; // Match the header's table layout
+    border-collapse: collapse;
+
+    td {
+      padding: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+
+      // Match column widths with header
+      &:nth-child(1) {
+        width: 10%;
+      } // ID
+      &:nth-child(2) {
+        width: 20%;
+      } // Nama Part
+      &:nth-child(3) {
+        width: 15%;
+      } // Tipe Part
+      &:nth-child(4) {
+        width: 15%;
+      } // Maker
+      &:nth-child(5) {
+        width: 10%;
+      } // Kuantitas
+      &:nth-child(6) {
+        width: 20%;
+      } // Informasi
+      &:nth-child(7) {
+        width: 10%;
+      } // Aksi
+    }
+  }
+
+  // Apply full height to the card body
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1rem;
+    overflow: hidden; // Prevent double scrollbars
+  }
+
+  // Status badge styles
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    text-align: center;
+
+    &.status-pending {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    &.status-in-progress {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+
+    &.status-completed {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    // Add any other status styles that might be in your data
+    &.status-cancelled {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    &.status-on-hold {
+      background-color: #6c757d;
+      color: #fff;
+    }
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  // Button styles
+  .btn {
+    transition: all 0.2s ease;
+
+    &.btn-primary,
+    &.btn-warning,
+    &.btn-danger {
+      padding: 0.25rem 0.5rem;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  // Pagination styles - keep at bottom of content
+  .pagination {
+    margin-top: auto; // Push to bottom
+    padding-top: 1rem;
+
+    .page-item {
+      margin: 0 2px;
+
+      .page-link {
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+    }
+  }
+
+  // Make the card take up available space
+  .card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: 0;
+  }
+}
+
+// Enhanced responsive adjustments
+@media (max-width: 768px) {
+  .inventory-page {
+    .search-container {
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px; // Compensate for padding if needed
+    }
+
+    .fixed-header {
+      .fixed-header-cell {
+        // Adjust widths for smaller screens
+        &:nth-child(1) {
+          width: 12%;
+        }
+        &:nth-child(2) {
+          width: 25%;
+        }
+        &:nth-child(3) {
+          width: 0;
+        }
+        &:nth-child(4) {
+          width: 0;
+        }
+        &:nth-child(5) {
+          width: 12%;
+        }
+        &:nth-child(6) {
+          width: 0;
+        }
+        &:nth-child(7) {
+          width: 15%;
+        }
+      }
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+
+    .responsive-table {
+      td {
+        // Match column widths with header for smaller screens
+        &:nth-child(1) {
+          width: 12%;
+        }
+        &:nth-child(2) {
+          width: 25%;
+        }
+        &:nth-child(3) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(4) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(5) {
+          width: 12%;
+        }
+        &:nth-child(6) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(7) {
+          width: 15%;
+        }
+      }
+    }
+  }
+}
+
+// Enhanced responsive adjustments
+@media (max-width: 768px) {
+  .inventory-page {
+    .search-container {
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px; // Compensate for padding if needed
+    }
+
+    .fixed-header {
+      .fixed-header-cell {
+        // Adjust widths for smaller screens
+        &:nth-child(1) {
+          width: 12%;
+        }
+        &:nth-child(2) {
+          width: 25%;
+        }
+        &:nth-child(3) {
+          width: 0;
+        }
+        &:nth-child(4) {
+          width: 0;
+        }
+        &:nth-child(5) {
+          width: 12%;
+        }
+        &:nth-child(6) {
+          width: 0;
+        }
+        &:nth-child(7) {
+          width: 15%;
+        }
+      }
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+
+    .responsive-table {
+      td {
+        // Match column widths with header for smaller screens
+        &:nth-child(1) {
+          width: 12%;
+        }
+        &:nth-child(2) {
+          width: 25%;
+        }
+        &:nth-child(3) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(4) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(5) {
+          width: 12%;
+        }
+        &:nth-child(6) {
+          width: 0;
+          display: none;
+        }
+        &:nth-child(7) {
+          width: 15%;
+        }
+      }
+    }
+  }
+}
+// Enhanced responsive adjustments
+@media (max-width: 768px) {
+  .inventory-page {
+    .search-input {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px; // Compensate for padding if needed
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+  }
+}

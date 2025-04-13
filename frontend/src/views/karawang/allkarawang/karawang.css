@@ -1,0 +1,52 @@
+/* TABEL BAR STATUS MESIN */
+.padded-cell {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-container {
+  position: relative;
+  width: 100%;
+
+  margin: 0 auto;
+}
+
+.grid-line {
+  position: absolute;
+  top: 25px;
+  bottom: 25px;
+  width: 2px;
+  background-color: rgba(200, 200, 200, 0.5);
+  z-index: 1;
+}
+
+.time-text {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  padding: 0 5px;
+}
+
+.progress-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  height: 32px;
+  max-width: 100%;
+}
+
+.machine-status-table {
+  table-layout: fixed;
+}
+
+.machine-status-table td {
+  height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

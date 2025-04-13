@@ -1,0 +1,93 @@
+/* Progress bar styling */
+.progress-stacked {
+  height: 32px !important;
+}
+
+.progress-stacked .progress {
+  height: 32px !important;
+}
+
+.progress-stacked .progress-bar {
+  height: 32px !important;
+  font-size: 1rem !important;
+}
+
+/* Make sure unfilled parts of the progress bar use a standard color */
+.progress-bar-secondary {
+  background-color: #e9ecef !important; /* Using a standard gray color instead of white */
+}
+
+/* Grid layout styling - moved from inline styles */
+.grid-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 0;
+  height: 120px;
+}
+
+.grid-line {
+  position: absolute;
+  top: 25px;
+  bottom: 25px;
+  width: 2px;
+  background-color: rgba(200, 200, 200, 0.5);
+  z-index: 1;
+}
+
+.time-text {
+  position: absolute;
+  transform: translateX(-50%);
+  width: auto;
+  font-size: 0.9rem;
+  padding: 0 5px;
+}
+
+.progress-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  padding: 0;
+  height: 32px;
+}
+
+/* Add this to your machinedetail.css file */
+.realtime-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+.realtime-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #0f0;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.realtime-dot.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}

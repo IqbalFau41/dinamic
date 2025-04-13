@@ -1,0 +1,163 @@
+@mixin sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.inventory-page {
+  .search-container {
+    width: 20%;
+  }
+
+  .table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto; // Add horizontal scroll for smaller screens
+  }
+
+  .fixed-header {
+    display: table;
+    width: 100%;
+    table-layout: fixed; // This ensures columns maintain their relative widths
+    @include sticky-header;
+
+    .fixed-header-cell {
+      display: table-cell;
+      padding: 0.75rem;
+      font-weight: bold;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 1px solid #dee2e6;
+      overflow: hidden;
+      text-overflow: ellipsis; // Add ellipsis for text overflow
+
+      // Fixed width percentages for proper distribution
+      &:nth-child(1) {
+        width: 10%; // Item ID
+      }
+      &:nth-child(2) {
+        width: 20%; // Item Name
+      }
+      &:nth-child(3) {
+        width: 10%; // Category
+      }
+      &:nth-child(4) {
+        width: 10%; // Quantity
+      }
+      &:nth-child(5) {
+        width: 10%; // Location
+      }
+      &:nth-child(6) {
+        width: 20%; // Last Updated
+      }
+      &:nth-child(7) {
+        width: 20%; // Status
+      }
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .table-container {
+    position: relative;
+    max-height: 61vh;
+    overflow-y: auto;
+    // Add this to ensure horizontal scrolling matches header
+    width: 100%;
+  }
+
+  .responsive-table {
+    width: 100%;
+    table-layout: fixed; // Match the header's table layout
+    border-collapse: collapse;
+
+    td {
+      padding: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      // Matching column widths with header
+      &:nth-child(1) {
+        width: 10%; // Item ID
+      }
+      &:nth-child(2) {
+        width: 20%; // Item Name
+      }
+      &:nth-child(3) {
+        width: 10%; // Category
+      }
+      &:nth-child(4) {
+        width: 10%; // Quantity
+      }
+      &:nth-child(5) {
+        width: 10%; // Location
+      }
+      &:nth-child(6) {
+        width: 20%; // Last Updated
+      }
+      &:nth-child(7) {
+        width: 20%; // Status
+      }
+    }
+  }
+
+  // Status badge styles
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    text-align: center;
+
+    &.status-in-stock {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    &.status-low-stock {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    &.status-out-of-stock {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    &.status-on-order {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+}
+
+// Enhanced responsive adjustments
+@media (max-width: 768px) {
+  .inventory-page {
+    .search-container {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .table-wrapper {
+      margin: 0 -15px; // Compensate for padding if needed
+    }
+
+    .fixed-header,
+    .responsive-table {
+      font-size: 0.9rem;
+    }
+  }
+}

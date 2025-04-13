@@ -1,0 +1,207 @@
+// Warna utama
+$primary-color: #a31d1d;
+$hover-color: #c72c2c;
+$active-color: #8b1616;
+$white-color: #ffffff;
+
+// Sidebar styling
+.sidebar {
+  background-color: $primary-color;
+  border-color: $primary-color;
+
+  .nav-link {
+    color: $white-color;
+    border-color: $primary-color;
+
+    &:hover {
+      background-color: $hover-color;
+      border-color: $hover-color;
+    }
+
+    &.active {
+      background-color: $active-color;
+      border-color: $active-color;
+    }
+
+    .nav-icon {
+      color: $white-color;
+    }
+  }
+
+  .nav-group-items,
+  .nav-group {
+    border-color: $primary-color;
+  }
+}
+
+// Header styling
+.header {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  color: $white-color;
+
+  .nav-link,
+  .header-nav .btn {
+    color: $white-color;
+    border-color: $primary-color;
+
+    &:hover {
+      background-color: $hover-color;
+      border-color: $hover-color;
+    }
+
+    &.active {
+      background-color: $active-color;
+      border-color: $active-color;
+    }
+  }
+
+  .nav-icon {
+    color: $white-color;
+  }
+
+  .dropdown-menu {
+    background-color: $primary-color;
+    border-color: $primary-color;
+
+    .dropdown-item {
+      color: $white-color;
+      border-color: $primary-color;
+
+      &:hover {
+        background-color: $hover-color;
+        border-color: $hover-color;
+      }
+
+      &.active {
+        background-color: $active-color;
+        border-color: $active-color;
+      }
+    }
+  }
+}
+
+// Border top untuk sidebar dan header
+.sidebar,
+.header {
+  border-top-color: $primary-color;
+}
+
+.border-end {
+  border-right-color: $active-color;
+}
+
+.border-bottom {
+  border-bottom-color: $active-color;
+}
+
+.bg-body-secondary {
+  background-color: blue;
+}
+
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm,
+.container {
+  max-width: 100%;
+}
+
+// LAYOUT MESIN TERBARU
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.card-container {
+  display: flex;
+  align-items: flex-start;
+  padding: 5px;
+}
+
+.col-3 {
+  flex: 0 0 auto;
+  width: 25%;
+  height: 100%;
+}
+
+.signal-tower {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  height: 70%;
+  justify-content: space-between;
+}
+
+.signal {
+  width: 30px;
+  transition: background-color 0.3s;
+}
+
+//WARNA LAMPU
+.signal-green {
+  background-color: rgb(0, 255, 0); /* Bright green */
+}
+
+.signal-yellow {
+  background-color: yellow; /* Bright yellow */
+}
+
+.signal-red {
+  background-color: red; /* Bright red */
+}
+
+.signal-blue {
+  background-color: blue; /* Bright blue */
+}
+
+.signal-white {
+  background-color: white; /* Bright white */
+}
+
+/* Dimmed versions */
+.signal-dim {
+  opacity: 0.3; /* Make the color dim */
+}
+
+/* Dark versions for inactive states */
+.signal-dark-green {
+  background-color: rgb(0, 80, 0); /* Darker green */
+}
+
+.signal-dark-yellow {
+  background-color: rgb(80, 80, 0); /* Darker yellow */
+}
+
+.signal-dark-red {
+  background-color: rgb(80, 0, 0); /* Darker red */
+}
+
+.signal-dark-blue {
+  background-color: rgb(0, 0, 80); /* Darker blue */
+}
+
+.signal-dark-white {
+  background-color: rgb(80, 80, 80); /* Darker gray */
+}
+
+.progress-stacked {
+  height: 32px !important;
+
+  .progress {
+    height: 32px !important;
+
+    .progress-bar {
+      height: 32px !important;
+      font-size: 1rem !important;
+    }
+  }
+}
+
+//TABEL INVENTORY
+.text-center {
+  text-align: center; /* Mengatur teks di tengah secara horizontal */
+  vertical-align: middle; /* Mengatur teks di tengah secara vertikal */
+}
