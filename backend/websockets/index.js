@@ -5,10 +5,24 @@ const url = require("url");
 
 // Initialize WebSocket server
 function setupWebSocketServer(server) {
+  const connectionCheckInterval = setInterval(() => {
+    for (const [ws, clientInfo] of clients.entries()) {
+      // Check if connection is still alive
+      if (ws.readyState !== WebSocket.OPEN) {
+        console.log(
+          `Client ${clientInfo.id} connection is no longer open, removing.`
+        );
+        clients.delete(ws);
+      }
+    }
+  }, 30000); // Check every 30 seconds
   const wss = new WebSocket.Server({ noServer: true });
 
   // Store connected clients with their filters
   const clients = new Map();
+
+  // Global cache yang bertahan antara koneksi
+  const globalMachineDataCache = {};
 
   // Handle new connections
   wss.on("connection", (ws, request, locationParam, lineGroupParam) => {
@@ -24,6 +38,22 @@ function setupWebSocketServer(server) {
     console.log(
       `Client connected: ${clientId}, Location: ${locationParam}, LineGroup: ${lineGroupParam}`
     );
+    if (locationParam && globalMachineDataCache[locationParam]) {
+      let data = globalMachineDataCache[locationParam];
+      if (lineGroupParam) {
+        data = data.filter((machine) => machine.lineGroup === lineGroupParam);
+      }
+
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "machineData",
+            data: data,
+            timestamp: new Date().toISOString(),
+          })
+        );
+      }
+    }
 
     // Send initial data immediately upon connection
     sendMachineData(ws);
@@ -105,33 +135,22 @@ function setupWebSocketServer(server) {
       // For each location, fetch machine data
       for (const location of locations) {
         // Query machine names
-        const machineNamesResult = await iotHub
-          .request()
-          .query(
-            `
-            SELECT MACHINE_CODE, MACHINE_NAME, LINE_GROUP
-            FROM CODE_MACHINE_PRODUCTION
-            WHERE LOCATION = @location
-          `
-          )
-          .input("location", location)
-          .execute();
+        const machineNamesResult = await iotHub.request().query(`
+          SELECT MACHINE_CODE, MACHINE_NAME, LINE_GROUP
+          FROM CODE_MACHINE_PRODUCTION
+          WHERE LOCATION = '${location}'
+        `);
 
         // Query latest machine history
-        const historyResult = await iotHub
-          .request()
-          .query(
-            `
-            SELECT h.MachineCode, h.OPERATION_NAME, h.MACHINE_COUNTER, h.CreatedAt
-            FROM MACHINE_STATUS_PRODUCTION h
-            INNER JOIN (
-              SELECT MachineCode, MAX(CreatedAt) as MaxDate
-              FROM MACHINE_STATUS_PRODUCTION
-              GROUP BY MachineCode
-            ) m ON h.MachineCode = m.MachineCode AND h.CreatedAt = m.MaxDate
-          `
-          )
-          .execute();
+        const historyResult = await iotHub.request().query(`
+          SELECT h.MachineCode, h.OPERATION_NAME, h.MACHINE_COUNTER, h.CreatedAt
+          FROM MACHINE_STATUS_PRODUCTION h
+          INNER JOIN (
+            SELECT MachineCode, MAX(CreatedAt) as MaxDate
+            FROM MACHINE_STATUS_PRODUCTION
+            GROUP BY MachineCode
+          ) m ON h.MachineCode = m.MachineCode AND h.CreatedAt = m.MaxDate
+        `);
 
         // Process and combine the data
         const machineNames = machineNamesResult.recordset || [];
@@ -188,6 +207,7 @@ function setupWebSocketServer(server) {
 
         // Store in cache
         machineDataCache[location] = transformedData;
+        globalMachineDataCache[location] = transformedData;
       }
     } catch (error) {
       console.error("Error fetching machine data:", error);
@@ -230,43 +250,56 @@ function setupWebSocketServer(server) {
   }
 
   // Broadcast data to all clients periodically
+  // Perbaiki fungsi broadcastMachineData()
   async function broadcastMachineData() {
-    // Fetch fresh data first
-    await fetchMachineData();
+    try {
+      // Fetch fresh data first
+      await fetchMachineData();
 
-    // Send to each client based on their filters
-    for (const [ws, clientInfo] of clients.entries()) {
-      if (ws.readyState !== WebSocket.OPEN) continue;
+      // Send to each client based on their filters
+      for (const [ws, clientInfo] of clients.entries()) {
+        try {
+          if (ws.readyState !== WebSocket.OPEN) continue;
 
-      const location = clientInfo.location;
-      const lineGroup = clientInfo.lineGroup;
+          const location = clientInfo.location;
+          const lineGroup = clientInfo.lineGroup;
 
-      if (!location || !machineDataCache[location]) continue;
+          if (!location || !machineDataCache[location]) continue;
 
-      // Get data and apply filter
-      let data = machineDataCache[location] || [];
-      if (lineGroup) {
-        data = data.filter((machine) => machine.lineGroup === lineGroup);
+          // Get data and apply filter
+          let data = machineDataCache[location] || [];
+          if (lineGroup) {
+            data = data.filter((machine) => machine.lineGroup === lineGroup);
+          }
+
+          // Send data to client
+          ws.send(
+            JSON.stringify({
+              type: "machineData",
+              data: data,
+              timestamp: new Date().toISOString(),
+            })
+          );
+        } catch (clientError) {
+          console.error(
+            `Error broadcasting to client ${clientInfo.id}:`,
+            clientError
+          );
+          // Continue with other clients
+        }
       }
-
-      // Send data to client
-      ws.send(
-        JSON.stringify({
-          type: "machineData",
-          data: data,
-          timestamp: new Date().toISOString(),
-        })
-      );
+    } catch (error) {
+      console.error("Error in broadcastMachineData:", error);
     }
   }
 
   // Fetch and broadcast data every second
-  const broadcastInterval = setInterval(broadcastMachineData, 1000);
-
+  const broadcastInterval = setInterval(broadcastMachineData, 300);
   // Clean up on server close
   return {
     close: () => {
       clearInterval(broadcastInterval);
+      clearInterval(connectionCheckInterval);
       wss.close();
     },
   };

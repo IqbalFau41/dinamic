@@ -17,6 +17,7 @@ import {
   generateDefaultSignal,
 } from '../../utils/signalLightConfig/signalLightConfig.js'
 import '../../scss/signalLightConfig.scss'
+import { getApiUrl, getWebSocketUrl } from '../../utils/apiUtils'
 
 const Karawang = () => {
   const [machineNames, setMachineNames] = useState([])
@@ -39,7 +40,7 @@ const Karawang = () => {
   useEffect(() => {
     const fetchLineGroups = async () => {
       try {
-        const response = await axios.get(`/api/machine-names/${location}/line-groups`)
+        const response = await axios.get(getApiUrl(`machine-names/${location}/line-groups`))
         setLineGroups(response.data.map((group) => group.LINE_GROUP))
       } catch (err) {
         console.error('Error fetching line groups:', err)
@@ -55,17 +56,60 @@ const Karawang = () => {
     try {
       setLoading(true)
 
-      // Make parallel API calls for machine names and production history
-      const [machineResponse, historyResponse] = await Promise.all([
-        axios.get(`/api/machine-names/${location}`, {
-          params: selectedLineGroup ? { lineGroup: selectedLineGroup } : undefined,
-        }),
-        axios.get(`/api/machine-history/${location}`, {
-          params: selectedLineGroup ? { lineGroup: selectedLineGroup } : undefined,
-        }),
-      ])
+      // Coba ambil data dari cache terlebih dahulu
+      const cachedDataKey = `machineData-${location}-${selectedLineGroup || 'all'}`
+      const cachedData = localStorage.getItem(cachedDataKey)
 
-      // Transform machine data
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData)
+          const cacheTime = localStorage.getItem(`${cachedDataKey}-timestamp`)
+          const cacheAge = cacheTime ? Date.now() - parseInt(cacheTime) : 0
+
+          // Gunakan cache jika umurnya kurang dari 5 menit
+          if (cacheAge < 5 * 60 * 1000) {
+            setMachineNames(parsedData)
+            applyLineGroupFilter(parsedData)
+            setLoading(false)
+            console.log('Menggunakan data cache')
+          }
+        } catch (e) {
+          console.error('Error parsing cached data:', e)
+        }
+      }
+
+      // Pertama ambil dulu data nama mesin untuk UI dasar
+      const machineResponse = await axios.get(getApiUrl(`machine-names/${location}`), {
+        params: selectedLineGroup ? { lineGroup: selectedLineGroup } : undefined,
+      })
+
+      // Transform data mesin dengan nilai default
+      const basicMachineData = machineResponse.data.map((machine) => {
+        return {
+          no_mesin: machine.MACHINE_CODE,
+          mesin: machine.MACHINE_NAME,
+          lineGroup: machine.LINE_GROUP,
+          status: 'Loading...',
+          message: 'Loading...',
+          Plan: 0,
+          actual: 0,
+          performance: '0%',
+          startTime: new Date(),
+          statusConfig: getStatusConfig('Shutdown'),
+        }
+      })
+
+      // Tampilkan basic UI mesin segera
+      setMachineNames(basicMachineData)
+      applyLineGroupFilter(basicMachineData)
+      setLoading(false)
+
+      // Kemudian ambil data history
+      const historyResponse = await axios.get(getApiUrl(`machine-history/${location}`), {
+        params: selectedLineGroup ? { lineGroup: selectedLineGroup } : undefined,
+      })
+
+      // Update dengan data lengkap
       const transformedData = machineResponse.data.map((machine) => {
         // Find the most recent history record for this machine
         const machineHistory =
@@ -74,7 +118,14 @@ const Karawang = () => {
             .sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt))[0] || {}
 
         const statusConfig = getStatusConfig(machineHistory.OPERATION_NAME || 'Shutdown')
-
+        if (
+          statusConfig.headerColor === '#666' ||
+          statusConfig.headerColor === 'rgb(102, 102, 102)'
+        ) {
+          // Ganti dengan warna default yang lebih baik (misalnya biru)
+          statusConfig.headerColor = '#0d6efd' // warna biru bootstrap
+          statusConfig.borderColor = '#0d6efd'
+        }
         // Calculate performance metrics
         const actual = machineHistory.MACHINE_COUNTER || 0
         const plan = 1000 // You may want to define a way to get planned production
@@ -94,10 +145,13 @@ const Karawang = () => {
         }
       })
 
+      // Simpan ke cache
+      localStorage.setItem(cachedDataKey, JSON.stringify(transformedData))
+      localStorage.setItem(`${cachedDataKey}-timestamp`, Date.now().toString())
+
       setMachineNames(transformedData)
       applyLineGroupFilter(transformedData)
       setLastUpdate(new Date())
-      setLoading(false)
     } catch (err) {
       console.error('Error fetching initial machine data:', err)
       setError(err)
@@ -107,11 +161,33 @@ const Karawang = () => {
 
   // Apply filtering based on selected line group
   const applyLineGroupFilter = (machines) => {
+    let filteredResults
+
     if (selectedLineGroup === '') {
-      setFilteredMachines(machines)
+      filteredResults = machines
     } else {
-      setFilteredMachines(machines.filter((machine) => machine.lineGroup === selectedLineGroup))
+      filteredResults = machines.filter((machine) => machine.lineGroup === selectedLineGroup)
     }
+
+    // Preserve existing status configs when possible
+    if (filteredMachines.length > 0) {
+      filteredResults = filteredResults.map((newMachine) => {
+        // Find matching machine in current filtered list
+        const existingMachine = filteredMachines.find((m) => m.no_mesin === newMachine.no_mesin)
+
+        // If found and status hasn't changed, keep existing statusConfig
+        if (existingMachine && existingMachine.status === newMachine.status) {
+          return {
+            ...newMachine,
+            statusConfig: existingMachine.statusConfig,
+          }
+        }
+
+        return newMachine
+      })
+    }
+
+    setFilteredMachines(filteredResults)
   }
 
   // Setup WebSocket connection
@@ -121,15 +197,8 @@ const Karawang = () => {
 
     // Establish WebSocket connection
     const setupWebSocket = () => {
-      // Use secure WebSocket if on HTTPS, otherwise standard WebSocket
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = window.location.host
-
-      // Build URL with query parameters for location and lineGroup
-      let wsUrl = `${protocol}//${host}/ws/machines?location=${location}`
-      if (selectedLineGroup) {
-        wsUrl += `&lineGroup=${selectedLineGroup}`
-      }
+      // Build WebSocket URL hanya dengan parameter location (tanpa lineGroup)
+      let wsUrl = getWebSocketUrl(`ws/machines?location=${location}`)
 
       if (socketRef.current) {
         socketRef.current.close()
@@ -140,6 +209,17 @@ const Karawang = () => {
       socket.onopen = () => {
         console.log('WebSocket connection established')
         setSocketConnected(true)
+
+        // Setelah koneksi terbuka, kirim filter lineGroup jika ada
+        if (selectedLineGroup) {
+          socket.send(
+            JSON.stringify({
+              type: 'setFilters',
+              location: location,
+              lineGroup: selectedLineGroup,
+            }),
+          )
+        }
       }
 
       socket.onmessage = (event) => {
@@ -148,8 +228,36 @@ const Karawang = () => {
 
           // Check if this is a machineData message
           if (messageData.type === 'machineData') {
-            setMachineNames(messageData.data)
-            applyLineGroupFilter(messageData.data)
+            // Make sure each machine has a valid statusConfig with correct colors
+            const updatedData = messageData.data.map((machine) => {
+              // Use existing statusConfig when possible
+              const existingMachine = machineNames.find((m) => m.no_mesin === machine.no_mesin)
+
+              // Always get fresh statusConfig (never use gray color)
+              const freshStatusConfig = getStatusConfig(machine.status)
+
+              // Merge with existing config if status hasn't changed
+              if (
+                existingMachine &&
+                existingMachine.status === machine.status &&
+                existingMachine.statusConfig &&
+                existingMachine.statusConfig.headerColor !== '#666' &&
+                existingMachine.statusConfig.headerColor !== 'rgb(102, 102, 102)'
+              ) {
+                return {
+                  ...machine,
+                  statusConfig: existingMachine.statusConfig,
+                }
+              }
+
+              return {
+                ...machine,
+                statusConfig: freshStatusConfig,
+              }
+            })
+
+            setMachineNames(updatedData)
+            applyLineGroupFilter(updatedData)
             setLastUpdate(new Date(messageData.timestamp))
           }
         } catch (error) {
@@ -186,12 +294,20 @@ const Karawang = () => {
         socketRef.current.close()
       }
     }
-  }, [location, selectedLineGroup]) // Include selectedLineGroup in dependencies
-
+  }, [location])
   // Handle line group change
   const handleLineGroupChange = (e) => {
     const lineGroup = e.target.value
     setSelectedLineGroup(lineGroup)
+
+    // Langsung terapkan filter lokal untuk UX yang lebih responsif
+    if (machineNames.length > 0) {
+      if (lineGroup === '') {
+        setFilteredMachines(machineNames)
+      } else {
+        setFilteredMachines(machineNames.filter((machine) => machine.lineGroup === lineGroup))
+      }
+    }
   }
 
   // Manual refresh function
@@ -214,9 +330,16 @@ const Karawang = () => {
 
   // Update filters when line group changes
   useEffect(() => {
-    updateFilters()
-    // Also apply filtering to existing machine data
-    applyLineGroupFilter(machineNames)
+    // Jika socket sudah terhubung, kirim update filter
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: 'setFilters',
+          location: location,
+          lineGroup: selectedLineGroup,
+        }),
+      )
+    }
   }, [selectedLineGroup])
 
   // Error handling
@@ -281,7 +404,7 @@ const Karawang = () => {
       </CRow>
 
       {/* Main Content Area */}
-      {loading ? (
+      {loading && filteredMachines.length === 0 ? (
         <CRow>
           <CCol className="text-center">
             <CSpinner color="primary" />
@@ -290,6 +413,7 @@ const Karawang = () => {
       ) : (
         <CRow className="d-flex align-items-stretch">
           {filteredMachines.map((data, index) => {
+            // Existing machine card rendering code
             const statusConfig = data.statusConfig || getStatusConfig(data.status)
             const { borderColor, headerColor } = statusConfig
             const signalClasses = generateDefaultSignal(data.status)
