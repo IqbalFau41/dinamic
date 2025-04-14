@@ -18,6 +18,7 @@ import {
 } from '@coreui/react'
 import './machinedetail.css'
 import ShiftDetail from './CProgress/ShiftDetail.js'
+import { getApiUrl } from '../../utils/apiUtils' // Import the utility function
 
 // Configuration for real-time updates
 const REALTIME_UPDATE_INTERVAL = 1000
@@ -61,7 +62,8 @@ const MachineDetail = () => {
   // Function to fetch machine data
   const fetchMachineData = async (date = selectedDate) => {
     try {
-      const response = await axios.get(`/api/machine-detail/${name}`, {
+      // Use the getApiUrl utility function to build the URL
+      const response = await axios.get(getApiUrl(`machine-detail/${name}`), {
         params: { date },
       })
 
