@@ -26,7 +26,7 @@ const Cikarang = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filteredMachines, setFilteredMachines] = useState([])
-  const [location] = useState('KRW')
+  const [location] = useState('CKR')
   const [lastUpdate, setLastUpdate] = useState(new Date())
   const [socketConnected, setSocketConnected] = useState(false)
 

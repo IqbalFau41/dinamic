@@ -1,33 +1,86 @@
-// Warna utama
-$primary-color: #a31d1d;
-$hover-color: #c72c2c;
-$active-color: #8b1616;
-$white-color: #ffffff;
+// Warna utama untuk mode terang
+$light-primary-color: #b84a4a;
+$light-hover-color: #cc6868;
+$light-active-color: #a13e3e;
+$light-text-color: #ffffff;
+
+// Warna utama untuk mode gelap
+$dark-primary-color: #912828;
+$dark-hover-color: #ad3e3e;
+$dark-active-color: #7a2020;
+$dark-text-color: #f0f0f0;
+
+// Warna default (mode terang)
+$primary-color: var(--primary-color, $light-primary-color);
+$hover-color: var(--hover-color, $light-hover-color);
+$active-color: var(--active-color, $light-active-color);
+$text-color: var(--text-color, $light-text-color);
+
+// CSS Variable untuk mode terang/gelap
+:root {
+  --primary-color: #{$light-primary-color};
+  --hover-color: #{$light-hover-color};
+  --active-color: #{$light-active-color};
+  --text-color: #{$light-text-color};
+
+  // Warna lampu untuk mode terang
+  --signal-green: rgba(0, 180, 0, 1);
+  --signal-yellow: rgba(230, 180, 0, 1);
+  --signal-red: rgba(220, 0, 0, 1);
+  --signal-blue: rgba(30, 100, 255, 1);
+  --signal-white: rgba(100, 100, 100, 1); // Abu-abu lebih gelap di mode terang
+
+  // Warna lampu non-aktif untuk mode terang
+  --signal-dark-green: rgba(200, 230, 200, 1);
+  --signal-dark-yellow: rgba(250, 240, 200, 1);
+  --signal-dark-red: rgba(245, 200, 200, 1);
+  --signal-dark-blue: rgba(200, 220, 250, 1);
+  --signal-dark-white: rgba(230, 230, 230, 1);
+}
+
+// Mode gelap
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #{$dark-primary-color};
+    --hover-color: #{$dark-hover-color};
+    --active-color: #{$dark-active-color};
+    --text-color: #{$dark-text-color};
+
+    // Warna lampu untuk mode gelap
+    --signal-green: rgba(0, 220, 0, 0.9);
+    --signal-yellow: rgba(255, 215, 0, 0.9);
+    --signal-red: rgba(220, 0, 0, 0.9);
+    --signal-blue: rgba(30, 144, 255, 0.9);
+    --signal-white: rgba(240, 240, 240, 0.9);
+
+    // Warna lampu non-aktif untuk mode gelap
+    --signal-dark-green: rgba(0, 100, 0, 0.7);
+    --signal-dark-yellow: rgba(150, 150, 0, 0.7);
+    --signal-dark-red: rgba(139, 0, 0, 0.7);
+    --signal-dark-blue: rgba(0, 0, 139, 0.7);
+    --signal-dark-white: rgba(120, 120, 120, 0.7);
+  }
+}
 
 // Sidebar styling
 .sidebar {
   background-color: $primary-color;
   border-color: $primary-color;
-
   .nav-link {
-    color: $white-color;
+    color: $text-color;
     border-color: $primary-color;
-
     &:hover {
       background-color: $hover-color;
       border-color: $hover-color;
     }
-
     &.active {
       background-color: $active-color;
       border-color: $active-color;
     }
-
     .nav-icon {
-      color: $white-color;
+      color: $text-color;
     }
   }
-
   .nav-group-items,
   .nav-group {
     border-color: $primary-color;
@@ -38,41 +91,33 @@ $white-color: #ffffff;
 .header {
   background-color: $primary-color;
   border-color: $primary-color;
-  color: $white-color;
-
+  color: $text-color;
   .nav-link,
   .header-nav .btn {
-    color: $white-color;
+    color: $text-color;
     border-color: $primary-color;
-
     &:hover {
       background-color: $hover-color;
       border-color: $hover-color;
     }
-
     &.active {
       background-color: $active-color;
       border-color: $active-color;
     }
   }
-
   .nav-icon {
-    color: $white-color;
+    color: $text-color;
   }
-
   .dropdown-menu {
     background-color: $primary-color;
     border-color: $primary-color;
-
     .dropdown-item {
-      color: $white-color;
+      color: $text-color;
       border-color: $primary-color;
-
       &:hover {
         background-color: $hover-color;
         border-color: $hover-color;
       }
-
       &.active {
         background-color: $active-color;
         border-color: $active-color;
@@ -86,19 +131,15 @@ $white-color: #ffffff;
 .header {
   border-top-color: $primary-color;
 }
-
 .border-end {
   border-right-color: $active-color;
 }
-
 .border-bottom {
   border-bottom-color: $active-color;
 }
-
 .bg-body-secondary {
-  background-color: blue;
+  background-color: rgba(0, 0, 255, 0.6);
 }
-
 .container-xxl,
 .container-xl,
 .container-lg,
@@ -114,19 +155,16 @@ $white-color: #ffffff;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 }
-
 .card-container {
   display: flex;
   align-items: flex-start;
   padding: 5px;
 }
-
 .col-3 {
   flex: 0 0 auto;
   width: 25%;
   height: 100%;
 }
-
 .signal-tower {
   display: flex;
   flex-direction: column;
@@ -134,65 +172,104 @@ $white-color: #ffffff;
   height: 70%;
   justify-content: space-between;
 }
-
 .signal {
   width: 30px;
   transition: background-color 0.3s;
 }
 
-//WARNA LAMPU
+// WARNA LAMPU menggunakan CSS variables untuk mode terang/gelap
 .signal-green {
-  background-color: rgb(0, 255, 0); /* Bright green */
+  background-color: var(--signal-green);
 }
-
 .signal-yellow {
-  background-color: yellow; /* Bright yellow */
+  background-color: var(--signal-yellow);
 }
-
 .signal-red {
-  background-color: red; /* Bright red */
+  background-color: var(--signal-red);
 }
-
 .signal-blue {
-  background-color: blue; /* Bright blue */
+  background-color: var(--signal-blue);
 }
-
 .signal-white {
-  background-color: white; /* Bright white */
+  background-color: var(--signal-white);
 }
 
-/* Dimmed versions */
+/* Dimmed versions with improved visibility */
 .signal-dim {
-  opacity: 0.3; /* Make the color dim */
+  opacity: 0.6; /* Lebih terlihat saat dim */
 }
 
-/* Dark versions for inactive states */
+/* Non-active signal colors */
 .signal-dark-green {
-  background-color: rgb(0, 80, 0); /* Darker green */
+  background-color: var(--signal-dark-green);
 }
-
 .signal-dark-yellow {
-  background-color: rgb(80, 80, 0); /* Darker yellow */
+  background-color: var(--signal-dark-yellow);
 }
-
 .signal-dark-red {
-  background-color: rgb(80, 0, 0); /* Darker red */
+  background-color: var(--signal-dark-red);
 }
-
 .signal-dark-blue {
-  background-color: rgb(0, 0, 80); /* Darker blue */
+  background-color: var(--signal-dark-blue);
+}
+.signal-dark-white {
+  background-color: var(--signal-dark-white);
 }
 
-.signal-dark-white {
-  background-color: rgb(80, 80, 80); /* Darker gray */
+// Animation styles from signalLightConfig.js
+// Blinking animation
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.5;
+  }
+}
+
+// Slow blinking animation
+@keyframes slow-blink {
+  0%,
+  74% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    opacity: 0.5;
+  }
+}
+
+// Alternating animation
+@keyframes alternate {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.5;
+  }
+}
+
+// Apply animations to elements
+.blinking {
+  animation: blink 1s infinite;
+}
+
+.slow-blinking {
+  animation: slow-blink 2s infinite;
+}
+
+.alternating {
+  animation: alternate 1.5s infinite;
 }
 
 .progress-stacked {
   height: 32px !important;
-
   .progress {
     height: 32px !important;
-
     .progress-bar {
       height: 32px !important;
       font-size: 1rem !important;
@@ -200,7 +277,7 @@ $white-color: #ffffff;
   }
 }
 
-//TABEL INVENTORY
+// TABEL INVENTORY
 .text-center {
   text-align: center; /* Mengatur teks di tengah secara horizontal */
   vertical-align: middle; /* Mengatur teks di tengah secara vertikal */
